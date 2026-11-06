@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-primary: #155E75;  /* Azul principal: Navegación y encabezados */
+  --color-brand-tech: #0284C7;     /* Azul tecnológico: Botones y acciones */
+  --color-brand-success: #10B981;  /* Verde IA: Detección y confirmación */
+  --color-brand-dark: #0F172A;     /* Texto principal */
+  --color-brand-bg: #F8FAFC;       /* Fondo general */
+  --color-brand-warning: #F59E0B;  /* Advertencias y stock bajo */
+  --color-brand-danger: #EF4444;   /* Errores y stock agotado */
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--color-brand-bg);
+  color: var(--color-brand-dark);
+}
