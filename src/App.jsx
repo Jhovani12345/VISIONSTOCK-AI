@@ -1,34 +1,51 @@
-import { useEffect, useState } from 'react'
-import { supabase, supabaseConfigurado } from './lib/supabase'
+import { Navigate, Route, Routes } from 'react-router-dom'
+import { useAuth } from './hooks/useAuth'
+import { ROLES, RUTA_INICIO } from './lib/constants'
+import GuestRoute from './routes/GuestRoute'
+import ProtectedRoute from './routes/ProtectedRoute'
+import AppLayout from './components/layout/AppLayout'
+import Login from './pages/auth/Login'
+import Registro from './pages/auth/Registro'
+import NoAutorizado from './pages/NoAutorizado'
+import NotFound from './pages/NotFound'
+import AdminDashboard from './pages/admin/AdminDashboard'
+import AdminUsuarios from './pages/admin/AdminUsuarios'
+import OperativoHome from './pages/operativo/OperativoHome'
 
-// Pantalla temporal de la Fase 1: verifica entorno y conexión con Supabase.
-// Se reemplaza por el enrutador real en la Fase 2.
+function RedirigirPorRol() {
+  const { rol } = useAuth()
+  return <Navigate to={RUTA_INICIO[rol] ?? '/login'} replace />
+}
+
 export default function App() {
-  const [estado, setEstado] = useState('verificando')
-
-  useEffect(() => {
-    if (!supabaseConfigurado) return setEstado('sin-env')
-    supabase.auth
-      .getSession()
-      .then(({ error }) => setEstado(error ? 'error' : 'ok'))
-      .catch(() => setEstado('error'))
-  }, [])
-
-  const mensajes = {
-    verificando: ['Verificando conexión…', 'text-slate-500'],
-    ok: ['Conectado a Supabase', 'text-brand-ia'],
-    error: ['No se pudo conectar con Supabase', 'text-danger'],
-    'sin-env': ['Faltan las variables VITE_SUPABASE_* en .env', 'text-warn'],
-  }
-  const [texto, color] = mensajes[estado]
-
   return (
-    <main className="min-h-screen flex items-center justify-center bg-surface p-6">
-      <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-sm ring-1 ring-slate-200 text-center">
-        <h1 className="text-3xl font-bold text-brand">VisionStock AI</h1>
-        <p className="mt-1 text-sm text-slate-500">Gestión inteligente de inventarios</p>
-        <p className={`mt-6 text-sm font-semibold ${color}`}>{texto}</p>
-      </div>
-    </main>
+    <Routes>
+      {/* Públicas (si ya hay sesión, redirigen al inicio del rol) */}
+      <Route element={<GuestRoute />}>
+        <Route path="/login" element={<Login />} />
+        <Route path="/registro" element={<Registro />} />
+      </Route>
+
+      {/* Requieren sesión */}
+      <Route element={<ProtectedRoute />}>
+        <Route element={<AppLayout />}>
+          <Route path="/" element={<RedirigirPorRol />} />
+          <Route path="/no-autorizado" element={<NoAutorizado />} />
+
+          {/* Solo SUPER_ADMIN */}
+          <Route element={<ProtectedRoute roles={[ROLES.SUPER_ADMIN]} />}>
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/usuarios" element={<AdminUsuarios />} />
+          </Route>
+
+          {/* Operativo: trabajador de almacén y admin */}
+          <Route element={<ProtectedRoute roles={[ROLES.SUPER_ADMIN, ROLES.TRABAJADOR_ALMACEN]} />}>
+            <Route path="/operativo" element={<OperativoHome />} />
+          </Route>
+        </Route>
+      </Route>
+
+      <Route path="*" element={<NotFound />} />
+    </Routes>
   )
 }
