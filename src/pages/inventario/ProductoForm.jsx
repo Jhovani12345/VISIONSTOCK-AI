@@ -1,10 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Field from '../../components/ui/Field'
 import Button from '../../components/ui/Button'
 import Alert from '../../components/ui/Alert'
 import { traducirErrorDB } from '../../lib/errores'
-
-const UNIDADES = ['PIEZA', 'CAJA', 'PAQUETE', 'KG', 'LITRO', 'METRO']
+import { CONFIG_DEFECTO, obtenerConfiguracion } from '../../services/configuracion'
 
 export default function ProductoForm({ producto, onGuardar, onCancelar }) {
   const editando = Boolean(producto)
@@ -19,9 +18,25 @@ export default function ProductoForm({ producto, onGuardar, onCancelar }) {
   })
   const [error, setError] = useState('')
   const [guardando, setGuardando] = useState(false)
+  const [catalogo, setCatalogo] = useState(CONFIG_DEFECTO.unidades_medida)
+  const [tocado, setTocado] = useState(false)
 
-  const onChange = (e) => setF((x) => ({ ...x, [e.target.name]: e.target.value }))
-  const unidades = [...new Set([...UNIDADES, f.unidad_medida])]
+  // Unidades y stock mínimo predeterminado desde Configuración
+  useEffect(() => {
+    obtenerConfiguracion().then((c) => {
+      setCatalogo(c.unidades_medida)
+      if (!editando && !tocado) {
+        setF((x) => ({
+          ...x,
+          stock_minimo: String(c.stock_minimo_predeterminado ?? 0),
+          unidad_medida: c.unidades_medida.includes(x.unidad_medida) ? x.unidad_medida : c.unidades_medida[0],
+        }))
+      }
+    })
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const onChange = (e) => { setTocado(true); setF((x) => ({ ...x, [e.target.name]: e.target.value })) }
+  const unidades = [...new Set([...catalogo, f.unidad_medida])]
 
   function validar() {
     if (!f.codigo_barras.trim()) return 'El código de barras es obligatorio.'

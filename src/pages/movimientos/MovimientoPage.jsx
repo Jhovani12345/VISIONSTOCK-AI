@@ -1,16 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { buscarPorCodigo, buscarProductosActivos, obtenerProducto } from '../../services/productos'
+import { Link, useSearchParams } from 'react-router-dom'
+import { obtenerProducto } from '../../services/productos'
 import { listarMovimientos, registrarMovimiento } from '../../services/movimientos'
 import { traducirErrorDB } from '../../lib/errores'
 import { fmtNum } from '../../lib/formato'
-import { useDebounce } from '../../hooks/useDebounce'
 import Alert from '../../components/ui/Alert'
 import BadgeEstado from '../../components/ui/BadgeEstado'
 import Button from '../../components/ui/Button'
 import Card from '../../components/ui/Card'
 import Field from '../../components/ui/Field'
-import Icon from '../../components/ui/Icon'
+import BuscadorProducto from '../../components/ui/BuscadorProducto'
 import TablaMovimientos from './TablaMovimientos'
 
 const CFG = {
@@ -22,11 +21,8 @@ const CFG = {
 export default function MovimientoPage({ tipo }) {
   const cfg = CFG[tipo]
   const esSalida = tipo === 'SALIDA'
+  const [params] = useSearchParams()
 
-  const [texto, setTexto] = useState('')
-  const q = useDebounce(texto, 250)
-  const [resultados, setResultados] = useState([])
-  const [abierto, setAbierto] = useState(false)
   const [producto, setProducto] = useState(null)
   const [cantidad, setCantidad] = useState('')
   const [obs, setObs] = useState('')
@@ -38,16 +34,16 @@ export default function MovimientoPage({ tipo }) {
   const [recarga, setRecarga] = useState(0)
   const cantRef = useRef(null)
 
-  // Búsqueda de productos mientras se escribe
+  // Preselección por URL: /entradas?producto=ID (desde Alertas o Análisis)
+  const idUrl = params.get('producto')
   useEffect(() => {
-    if (producto) return
-    if (!q.trim()) { setResultados([]); return }
+    if (!idUrl) return
     let cancelado = false
-    buscarProductosActivos(q)
-      .then((r) => !cancelado && setResultados(r))
-      .catch(() => !cancelado && setResultados([]))
+    obtenerProducto(idUrl)
+      .then((p) => !cancelado && p?.activo && setProducto(p))
+      .catch(() => {})
     return () => { cancelado = true }
-  }, [q, producto])
+  }, [idUrl])
 
   // Historial del tipo de movimiento
   useEffect(() => {
@@ -66,26 +62,7 @@ export default function MovimientoPage({ tipo }) {
 
   function seleccionar(p) {
     setProducto(p)
-    setTexto('')
-    setResultados([])
-    setAbierto(false)
     setError('')
-  }
-
-  // Lector de códigos de barras (USB) o código tecleado + Enter
-  async function onEnter(e) {
-    if (e.key !== 'Enter') return
-    e.preventDefault()
-    const t = texto.trim()
-    if (!t) return
-    try {
-      const exacto = await buscarPorCodigo(t)
-      if (exacto) return seleccionar(exacto)
-      if (resultados.length === 1) return seleccionar(resultados[0])
-      if (resultados.length === 0) setError('No se encontró un producto con ese código.')
-    } catch (err) {
-      setError(traducirErrorDB(err))
-    }
   }
 
   const cant = Number(cantidad)
@@ -125,42 +102,7 @@ export default function MovimientoPage({ tipo }) {
           {error && <Alert tipo="error">{error}</Alert>}
 
           {!producto ? (
-            <div className="relative">
-              <label htmlFor="buscar-producto" className="mb-1 block text-sm font-medium text-slate-700">Producto</label>
-              <div className="relative">
-                <Icon name="buscar" className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                <input
-                  id="buscar-producto"
-                  value={texto}
-                  autoComplete="off"
-                  placeholder="Buscar por nombre o escanear código"
-                  onChange={(e) => { setTexto(e.target.value); setAbierto(true); setError('') }}
-                  onFocus={() => setAbierto(true)}
-                  onBlur={() => setAbierto(false)}
-                  onKeyDown={onEnter}
-                  className="w-full rounded-lg border border-slate-300 bg-white py-2.5 pl-9 pr-3 text-sm placeholder:text-slate-400 focus:border-brand-tech focus:outline-none focus:ring-2 focus:ring-brand-tech/30"
-                />
-              </div>
-              {abierto && resultados.length > 0 && (
-                <ul className="absolute z-10 mt-1 max-h-64 w-full overflow-y-auto rounded-lg bg-white py-1 shadow-lg ring-1 ring-slate-200">
-                  {resultados.map((p) => (
-                    <li key={p.id_producto}>
-                      <button
-                        type="button"
-                        onMouseDown={(e) => { e.preventDefault(); seleccionar(p) }}
-                        className="flex w-full items-center justify-between gap-3 px-3 py-2 text-left hover:bg-slate-50"
-                      >
-                        <span className="min-w-0">
-                          <span className="block truncate text-sm font-medium text-ink">{p.nombre}</span>
-                          <span className="block font-mono text-xs text-slate-500">{p.codigo_barras}</span>
-                        </span>
-                        <span className="shrink-0 text-xs text-slate-500">{fmtNum(p.cantidad_actual)} {p.unidad_medida.toLowerCase()}</span>
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
+            <BuscadorProducto onSeleccionar={seleccionar} onError={setError} />
           ) : (
             <div className="rounded-lg bg-slate-50 p-3 ring-1 ring-slate-200">
               <div className="flex items-start justify-between gap-3">

@@ -20,6 +20,8 @@ export function traducirErrorDB(error) {
   if (code === '42501' || msg.includes('row-level security')) return 'No tienes permisos para realizar esta acción.'
   if (code === '23514') return 'Algún valor está fuera del rango permitido.'
   if (code === 'P0001') return error.message // mensajes propios de las funciones SQL (ya en español)
+  if (['PGRST202', 'PGRST205', '42883', '42P01'].includes(code))
+    return 'Falta ejecutar una migración en Supabase (carpeta database/). Revisa el README.'
   if (msg.includes('failed to fetch') || msg.includes('network')) return 'No hay conexión con el servidor.'
   return 'No se pudo completar la operación. Inténtalo de nuevo.'
 }

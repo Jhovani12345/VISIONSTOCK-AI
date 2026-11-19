@@ -10,13 +10,18 @@ import Recuperar from './pages/auth/Recuperar'
 import Restablecer from './pages/auth/Restablecer'
 import NoAutorizado from './pages/NoAutorizado'
 import NotFound from './pages/NotFound'
-import Proximamente from './pages/Proximamente'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import AdminUsuarios from './pages/admin/AdminUsuarios'
 import OperativoHome from './pages/operativo/OperativoHome'
 import InventarioPage from './pages/inventario/InventarioPage'
 import MovimientoPage from './pages/movimientos/MovimientoPage'
 import HistorialMovimientos from './pages/movimientos/HistorialMovimientos'
+import AuditoriasPage from './pages/auditorias/AuditoriasPage'
+import AuditoriaDetalle from './pages/auditorias/AuditoriaDetalle'
+import AlertasPage from './pages/alertas/AlertasPage'
+import AnalisisPage from './pages/analisis/AnalisisPage'
+import ReportesPage from './pages/reportes/ReportesPage'
+import ConfiguracionPage from './pages/configuracion/ConfiguracionPage'
 
 const SOLO_ADMIN = [ROLES.SUPER_ADMIN]
 const AMBOS = [ROLES.SUPER_ADMIN, ROLES.TRABAJADOR_ALMACEN]
@@ -48,11 +53,12 @@ export default function App() {
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/productos" element={<InventarioPage modoAdmin />} />
             <Route path="/admin/usuarios" element={<AdminUsuarios />} />
-            <Route path="/admin/auditorias" element={<Proximamente modulo="Auditorías" />} />
-            <Route path="/admin/alertas" element={<Proximamente modulo="Alertas" />} />
-            <Route path="/admin/analisis" element={<Proximamente modulo="Análisis" />} />
-            <Route path="/admin/reportes" element={<Proximamente modulo="Reportes" />} />
-            <Route path="/admin/configuracion" element={<Proximamente modulo="Configuración" />} />
+            <Route path="/admin/auditorias" element={<AuditoriasPage />} />
+            <Route path="/admin/auditorias/:id" element={<AuditoriaDetalle />} />
+            <Route path="/admin/alertas" element={<AlertasPage />} />
+            <Route path="/admin/analisis" element={<AnalisisPage />} />
+            <Route path="/admin/reportes" element={<ReportesPage />} />
+            <Route path="/admin/configuracion" element={<ConfiguracionPage />} />
           </Route>
 
           {/* Administrador y trabajador de almacén */}

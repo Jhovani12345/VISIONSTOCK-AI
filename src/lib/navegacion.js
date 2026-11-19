@@ -27,6 +27,10 @@ const EXTRAS = [
 ]
 
 export function tituloDe(pathname) {
-  const n = [...NAV, ...EXTRAS].find((i) => i.to === pathname)
+  const todas = [...NAV, ...EXTRAS]
+  // Exacta primero; si no, la sección más específica que la contiene (/admin/auditorias/12)
+  const n =
+    todas.find((i) => i.to === pathname) ??
+    todas.filter((i) => pathname.startsWith(`${i.to}/`)).sort((a, b) => b.to.length - a.to.length)[0]
   return { titulo: n?.etiqueta ?? 'VisionStock AI', subtitulo: n?.subtitulo ?? '' }
 }

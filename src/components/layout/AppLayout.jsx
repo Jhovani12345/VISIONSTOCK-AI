@@ -4,6 +4,7 @@ import { useAuth } from '../../hooks/useAuth'
 import { useAlertasActivas } from '../../hooks/useAlertasActivas'
 import { ETIQUETA_ROL, ROLES } from '../../lib/constants'
 import { NAV, tituloDe } from '../../lib/navegacion'
+import { obtenerConfiguracion } from '../../services/configuracion'
 import Icon from '../ui/Icon'
 
 function iniciales(perfil) {
@@ -21,6 +22,14 @@ export default function AppLayout() {
   const [menu, setMenu] = useState(false)
   const [busca, setBusca] = useState('')
   const menuRef = useRef(null)
+  const [almacen, setAlmacen] = useState('')
+
+  useEffect(() => {
+    const cargar = () => obtenerConfiguracion().then((c) => setAlmacen(c.nombre_almacen))
+    cargar()
+    window.addEventListener('configuracion-actualizada', cargar)
+    return () => window.removeEventListener('configuracion-actualizada', cargar)
+  }, [])
 
   const items = NAV.filter((i) => i.roles.includes(rol))
   const { titulo, subtitulo } = tituloDe(pathname)
@@ -56,7 +65,10 @@ export default function AppLayout() {
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/15">
             <Icon name="escaner" />
           </span>
-          <span className="text-sm font-bold">VisionStock AI</span>
+          <span className="min-w-0">
+            <span className="block text-sm font-bold">VisionStock AI</span>
+            {almacen && <span className="block truncate text-[11px] text-cyan-100/80">{almacen}</span>}
+          </span>
         </Link>
 
         <nav className="mt-6 flex-1 space-y-0.5 overflow-y-auto" aria-label="Navegación principal">
