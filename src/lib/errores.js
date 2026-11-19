@@ -9,3 +9,16 @@ export function traducirError(error) {
   if (msg.includes('failed to fetch') || msg.includes('network')) return 'No hay conexión con el servidor.'
   return 'Ocurrió un error inesperado. Inténtalo de nuevo.'
 }
+
+// Errores de base de datos / PostgREST
+export function traducirErrorDB(error) {
+  if (error?.parcial) return error.message
+  const code = error?.code
+  const msg = (error?.message ?? '').toLowerCase()
+  if (code === '23505') return 'Ya existe un producto con ese código de barras.'
+  if (code === '42501' || msg.includes('row-level security')) return 'No tienes permisos para realizar esta acción.'
+  if (code === '23514') return 'Algún valor está fuera del rango permitido.'
+  if (code === 'P0001') return error.message // mensajes propios de las funciones SQL (ya en español)
+  if (msg.includes('failed to fetch') || msg.includes('network')) return 'No hay conexión con el servidor.'
+  return 'No se pudo completar la operación. Inténtalo de nuevo.'
+}

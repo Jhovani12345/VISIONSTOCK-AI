@@ -5,6 +5,8 @@ import { ROLES, ETIQUETA_ROL } from '../../lib/constants'
 
 const NAV = [
   { to: '/admin', label: 'Dashboard', roles: [ROLES.SUPER_ADMIN], end: true },
+  { to: '/admin/productos', label: 'Productos', roles: [ROLES.SUPER_ADMIN] },
+  { to: '/inventario', label: 'Inventario', roles: [ROLES.SUPER_ADMIN, ROLES.TRABAJADOR_ALMACEN] },
   { to: '/admin/usuarios', label: 'Usuarios', roles: [ROLES.SUPER_ADMIN] },
   { to: '/operativo', label: 'Operación', roles: [ROLES.SUPER_ADMIN, ROLES.TRABAJADOR_ALMACEN] },
 ]

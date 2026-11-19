@@ -11,6 +11,7 @@ import NotFound from './pages/NotFound'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import AdminUsuarios from './pages/admin/AdminUsuarios'
 import OperativoHome from './pages/operativo/OperativoHome'
+import InventarioPage from './pages/inventario/InventarioPage'
 
 function RedirigirPorRol() {
   const { rol } = useAuth()
@@ -35,12 +36,14 @@ export default function App() {
           {/* Solo SUPER_ADMIN */}
           <Route element={<ProtectedRoute roles={[ROLES.SUPER_ADMIN]} />}>
             <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/productos" element={<InventarioPage modoAdmin />} />
             <Route path="/admin/usuarios" element={<AdminUsuarios />} />
           </Route>
 
           {/* Operativo: trabajador de almacén y admin */}
           <Route element={<ProtectedRoute roles={[ROLES.SUPER_ADMIN, ROLES.TRABAJADOR_ALMACEN]} />}>
             <Route path="/operativo" element={<OperativoHome />} />
+            <Route path="/inventario" element={<InventarioPage />} />
           </Route>
         </Route>
       </Route>
