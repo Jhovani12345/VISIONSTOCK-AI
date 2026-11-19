@@ -6,6 +6,8 @@ import ProtectedRoute from './routes/ProtectedRoute'
 import AppLayout from './components/layout/AppLayout'
 import Login from './pages/auth/Login'
 import Registro from './pages/auth/Registro'
+import Recuperar from './pages/auth/Recuperar'
+import Restablecer from './pages/auth/Restablecer'
 import NoAutorizado from './pages/NoAutorizado'
 import NotFound from './pages/NotFound'
 import Proximamente from './pages/Proximamente'
@@ -30,7 +32,11 @@ export default function App() {
       <Route element={<GuestRoute />}>
         <Route path="/login" element={<Login />} />
         <Route path="/registro" element={<Registro />} />
+        <Route path="/recuperar" element={<Recuperar />} />
       </Route>
+
+      {/* Pública: llega con sesión de recuperación */}
+      <Route path="/restablecer" element={<Restablecer />} />
 
       <Route element={<ProtectedRoute />}>
         <Route element={<AppLayout />}>

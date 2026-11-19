@@ -1,21 +1,19 @@
-export default function AuthShell({ titulo, subtitulo, children, pie }) {
+import FondoAuth from '../auth/FondoAuth'
+import Logo from '../auth/Logo'
+
+export default function AuthShell({ titulo, subtitulo, children, pie, logo = true }) {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-surface p-4">
-      <div className="w-full max-w-md">
-        <div className="mb-6 text-center">
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-brand text-lg font-bold text-white">
-            VS
-          </div>
-          <h1 className="text-2xl font-bold text-brand">VisionStock AI</h1>
-          <p className="text-sm text-slate-500">Gestión inteligente de inventarios</p>
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden p-4">
+      <FondoAuth />
+      <main className="relative z-10 w-full max-w-md py-8">
+        {logo && <Logo className="mb-8" />}
+        <div className="rounded-2xl border border-cyan-400/30 bg-slate-900/55 p-6 shadow-[0_0_48px_rgba(34,211,238,0.14)] backdrop-blur-xl sm:p-8">
+          <h1 className="text-center text-3xl font-bold text-white">{titulo}</h1>
+          {subtitulo && <p className="mt-2 text-center text-sm text-slate-300">{subtitulo}</p>}
+          <div className="mt-7">{children}</div>
+          {pie && <div className="mt-6 text-center text-sm text-slate-300">{pie}</div>}
         </div>
-        <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200 sm:p-8">
-          <h2 className="text-xl font-bold text-ink">{titulo}</h2>
-          {subtitulo && <p className="mt-1 text-sm text-slate-500">{subtitulo}</p>}
-          <div className="mt-6">{children}</div>
-        </div>
-        {pie && <p className="mt-4 text-center text-sm text-slate-600">{pie}</p>}
-      </div>
-    </main>
+      </main>
+    </div>
   )
 }

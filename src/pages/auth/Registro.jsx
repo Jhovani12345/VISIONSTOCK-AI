@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 import { traducirError } from '../../lib/errores'
 import AuthShell from '../../components/ui/AuthShell'
-import Field from '../../components/ui/Field'
-import Button from '../../components/ui/Button'
+import AuthField from '../../components/auth/AuthField'
+import AuthButton from '../../components/auth/AuthButton'
 import Alert from '../../components/ui/Alert'
 
 const VACIO = { nombre: '', apellido: '', correo: '', password: '', confirmar: '' }
@@ -37,15 +37,17 @@ export default function Registro() {
     setEnviando(false)
 
     if (error) return setError(traducirError(error))
-    // Con "Confirm email" activo en Supabase no hay sesión hasta confirmar.
-    if (!data.session) setPendienteConfirmar(true)
-    // Si hay sesión, GuestRoute redirige automáticamente.
+    if (!data.session) setPendienteConfirmar(true) // "Confirm email" activo en Supabase
   }
+
+  const linkLogin = (
+    <Link to="/login" className="font-semibold text-cyan-300 hover:underline">Inicia sesión</Link>
+  )
 
   if (pendienteConfirmar) {
     return (
-      <AuthShell titulo="Revisa tu correo" pie={<Link to="/login" className="font-semibold text-brand-tech hover:underline">Volver a iniciar sesión</Link>}>
-        <Alert tipo="exito">
+      <AuthShell titulo="Revisa tu correo" pie={<>¿Ya confirmaste? {linkLogin}</>}>
+        <Alert oscuro tipo="exito">
           Te enviamos un enlace de confirmación a {form.correo}. Ábrelo para activar tu cuenta.
         </Alert>
       </AuthShell>
@@ -54,32 +56,23 @@ export default function Registro() {
 
   return (
     <AuthShell
+      logo={false}
       titulo="Crear cuenta"
       subtitulo="Regístrate para usar VisionStock AI."
-      pie={
-        <>
-          ¿Ya tienes una cuenta?{' '}
-          <Link to="/login" className="font-semibold text-brand-tech hover:underline">
-            Inicia sesión
-          </Link>
-        </>
-      }
+      pie={<>¿Ya tienes cuenta? {linkLogin}</>}
     >
       <form onSubmit={onSubmit} className="space-y-4" noValidate>
-        {error && <Alert tipo="error">{error}</Alert>}
+        {error && <Alert oscuro tipo="error">{error}</Alert>}
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Nombre" id="nombre" autoComplete="given-name" required value={form.nombre} onChange={onChange} />
-          <Field label="Apellido" id="apellido" autoComplete="family-name" value={form.apellido} onChange={onChange} />
+          <AuthField ocultarEtiqueta label="Nombre" id="nombre" autoComplete="given-name" required value={form.nombre} onChange={onChange} />
+          <AuthField ocultarEtiqueta label="Apellido" id="apellido" autoComplete="family-name" value={form.apellido} onChange={onChange} />
         </div>
-        <Field label="Correo electrónico" id="correo" type="email" autoComplete="email" required
-          placeholder="tucorreo@empresa.com" value={form.correo} onChange={onChange} />
-        <Field label="Contraseña" id="password" type="password" autoComplete="new-password" required
-          placeholder="Mínimo 8 caracteres" value={form.password} onChange={onChange} />
-        <Field label="Confirmar contraseña" id="confirmar" type="password" autoComplete="new-password" required
+        <AuthField ocultarEtiqueta label="Correo electrónico" id="correo" type="email" autoComplete="email" required value={form.correo} onChange={onChange} />
+        <AuthField ocultarEtiqueta label="Contraseña" id="password" type="password" autoComplete="new-password" required
+          ayuda="mínimo 8 caracteres" value={form.password} onChange={onChange} />
+        <AuthField ocultarEtiqueta label="Confirmar contraseña" id="confirmar" type="password" autoComplete="new-password" required
           value={form.confirmar} onChange={onChange} />
-        <Button type="submit" cargando={enviando} className="w-full">
-          Registrarse
-        </Button>
+        <AuthButton type="submit" invertido cargando={enviando}>Registrarse</AuthButton>
       </form>
     </AuthShell>
   )

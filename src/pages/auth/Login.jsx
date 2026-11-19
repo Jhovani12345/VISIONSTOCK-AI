@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 import { traducirError } from '../../lib/errores'
 import AuthShell from '../../components/ui/AuthShell'
-import Field from '../../components/ui/Field'
-import Button from '../../components/ui/Button'
+import AuthField from '../../components/auth/AuthField'
+import AuthButton from '../../components/auth/AuthButton'
 import Alert from '../../components/ui/Alert'
 
 export default function Login() {
@@ -28,26 +28,30 @@ export default function Login() {
   return (
     <AuthShell
       titulo="Iniciar sesión"
-      subtitulo="Ingresa con tus credenciales para continuar."
+      subtitulo="Accede a tu panel de inventario inteligente"
       pie={
         <>
-          ¿No tienes una cuenta?{' '}
-          <Link to="/registro" className="font-semibold text-brand-tech hover:underline">
-            Regístrate
+          O{' '}
+          <Link to="/registro" className="font-semibold text-cyan-300 hover:underline">
+            regístrate gratis
           </Link>
         </>
       }
     >
       <form onSubmit={onSubmit} className="space-y-4" noValidate>
-        {error && <Alert tipo="error">{error}</Alert>}
-        <Field label="Correo electrónico" id="correo" type="email" autoComplete="email" required
-          placeholder="tucorreo@empresa.com" value={form.correo} onChange={onChange} />
-        <Field label="Contraseña" id="password" type="password" autoComplete="current-password" required
+        {error && <Alert oscuro tipo="error">{error}</Alert>}
+        <AuthField label="Correo electrónico" id="correo" type="email" autoComplete="email" required
+          placeholder="usuario@correo.com" value={form.correo} onChange={onChange} />
+        <AuthField label="Contraseña" id="password" type="password" autoComplete="current-password" required
           value={form.password} onChange={onChange} />
-        <Button type="submit" cargando={enviando} className="w-full"
-          disabled={!form.correo || !form.password}>
+        <div className="text-right">
+          <Link to="/recuperar" className="text-xs text-slate-300 hover:text-cyan-300 hover:underline">
+            ¿Olvidaste tu contraseña?
+          </Link>
+        </div>
+        <AuthButton type="submit" cargando={enviando} disabled={!form.correo || !form.password}>
           Iniciar sesión
-        </Button>
+        </AuthButton>
       </form>
     </AuthShell>
   )
