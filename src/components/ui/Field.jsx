@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { t } from '../../i18n'
 
 export default function Field({ label, id, type = 'text', className = '', inputRef, ...props }) {
   const [ver, setVer] = useState(false)
@@ -23,9 +24,9 @@ export default function Field({ label, id, type = 'text', className = '', inputR
             type="button"
             onClick={() => setVer((v) => !v)}
             className="absolute inset-y-0 right-0 px-3 text-xs font-semibold text-brand hover:text-brand-tech"
-            aria-label={ver ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+            aria-label={ver ? t('comun.ocultarPassword') : t('comun.mostrarPassword')}
           >
-            {ver ? 'Ocultar' : 'Mostrar'}
+            {ver ? t('comun.ocultar') : t('comun.mostrar')}
           </button>
         )}
       </div>

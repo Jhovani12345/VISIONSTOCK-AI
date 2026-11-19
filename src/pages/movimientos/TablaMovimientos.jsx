@@ -1,12 +1,13 @@
 import BadgeEstado from '../../components/ui/BadgeEstado'
 import Icon from '../../components/ui/Icon'
 import { fmtFecha, fmtFechaRelativa, fmtNum } from '../../lib/formato'
+import { t } from '../../i18n'
 
 export default function TablaMovimientos({
   filas,
   mostrarUsuario = false,
   fechaCompleta = false,
-  vacio = 'Aún no hay movimientos registrados.',
+  vacio = t('dash.sinMov'),
 }) {
   if (!filas.length) return <p className="py-8 text-center text-sm text-slate-500">{vacio}</p>
 
@@ -15,12 +16,12 @@ export default function TablaMovimientos({
       <table className="w-full min-w-[480px] text-left text-sm">
         <thead>
           <tr className="border-b border-slate-100 text-xs text-slate-500">
-            <th className="pb-2 pr-3 font-medium">Producto</th>
-            <th className="pb-2 pr-3 font-medium">Tipo</th>
-            <th className="pb-2 pr-3 text-right font-medium">Cantidad</th>
-            <th className="pb-2 pr-3 font-medium">Fecha</th>
-            {mostrarUsuario && <th className="pb-2 pr-3 font-medium">Usuario</th>}
-            <th className="pb-2 font-medium">Estado</th>
+            <th className="pb-2 pr-3 font-medium">{t('comun.producto')}</th>
+            <th className="pb-2 pr-3 font-medium">{t('comun.tipo')}</th>
+            <th className="pb-2 pr-3 text-right font-medium">{t('comun.cantidad')}</th>
+            <th className="pb-2 pr-3 font-medium">{t('comun.fecha')}</th>
+            {mostrarUsuario && <th className="pb-2 pr-3 font-medium">{t('comun.usuario')}</th>}
+            <th className="pb-2 font-medium">{t('comun.estado')}</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-100">
@@ -32,7 +33,7 @@ export default function TablaMovimientos({
                 <td className="py-3 pr-3">
                   <span className={`inline-flex items-center gap-1.5 ${entrada ? 'text-emerald-600' : 'text-slate-600'}`}>
                     <Icon name={entrada ? 'entradas' : 'salidas'} className="h-3.5 w-3.5" />
-                    {entrada ? 'Entrada' : 'Salida'}
+                    {entrada ? t('mov.entrada') : t('mov.salida')}
                   </span>
                 </td>
                 <td className={`py-3 pr-3 text-right font-semibold tabular-nums ${entrada ? 'text-emerald-600' : 'text-danger'}`}>

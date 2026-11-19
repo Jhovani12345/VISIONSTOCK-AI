@@ -11,15 +11,11 @@ import Card from '../../components/ui/Card'
 import Field from '../../components/ui/Field'
 import BuscadorProducto from '../../components/ui/BuscadorProducto'
 import TablaMovimientos from './TablaMovimientos'
-
-const CFG = {
-  ENTRADA: { titulo: 'Registrar entrada', sub: 'Mercancía que ingresa al almacén', boton: 'Registrar entrada', exito: 'Entrada registrada', historial: 'Últimas entradas', vacio: 'Aún no hay entradas registradas.' },
-  SALIDA: { titulo: 'Registrar salida', sub: 'Mercancía que sale del almacén', boton: 'Registrar salida', exito: 'Salida registrada', historial: 'Últimas salidas', vacio: 'Aún no hay salidas registradas.' },
-}
+import { t } from '../../i18n'
 
 // Usar con key={tipo} en la ruta para que el estado no se comparta entre Entradas y Salidas.
 export default function MovimientoPage({ tipo }) {
-  const cfg = CFG[tipo]
+  const cfg = t(`mov.${tipo}`)
   const esSalida = tipo === 'SALIDA'
   const [params] = useSearchParams()
 
@@ -74,9 +70,9 @@ export default function MovimientoPage({ tipo }) {
     e.preventDefault()
     setError('')
     setAviso('')
-    if (!producto) return setError('Selecciona un producto.')
-    if (!cantValida) return setError('Ingresa una cantidad mayor a cero.')
-    if (esSalida && cant > stock) return setError(`No hay suficiente existencia (disponible: ${fmtNum(stock)}).`)
+    if (!producto) return setError(t('mov.seleccionaProducto'))
+    if (!cantValida) return setError(t('mov.cantidadMayor'))
+    if (esSalida && cant > stock) return setError(t('mov.insuficiente', { n: fmtNum(stock) }))
 
     setEnviando(true)
     try {
@@ -112,12 +108,12 @@ export default function MovimientoPage({ tipo }) {
                   {producto.ubicacion && <p className="text-xs text-slate-500">{producto.ubicacion}</p>}
                 </div>
                 <button type="button" onClick={() => { setProducto(null); setAviso('') }} className="text-xs font-semibold text-brand-tech hover:underline">
-                  Cambiar
+                  {t('comun.cambiar')}
                 </button>
               </div>
               <div className="mt-3 flex items-center justify-between">
                 <p className="text-sm text-slate-600">
-                  Existencia actual: <span className="font-bold text-ink tabular-nums">{fmtNum(stock)}</span>{' '}
+                  {t('mov.existenciaActual')} <span className="font-bold text-ink tabular-nums">{fmtNum(stock)}</span>{' '}
                   <span className="text-xs">{producto.unidad_medida.toLowerCase()}</span>
                 </p>
                 <BadgeEstado estado={producto.estado} />
@@ -126,21 +122,21 @@ export default function MovimientoPage({ tipo }) {
           )}
 
           <Field
-            label={`Cantidad${producto ? ` (${producto.unidad_medida.toLowerCase()})` : ''}`}
+            label={`${t('comun.cantidad')}${producto ? ` (${producto.unidad_medida.toLowerCase()})` : ''}`}
             id="cantidad" type="number" inputMode="decimal" min="0" step="any"
             inputRef={cantRef} disabled={!producto}
             value={cantidad} onChange={(e) => setCantidad(e.target.value)}
           />
           {despues !== null && (
             <p className={`text-xs ${despues < 0 ? 'font-semibold text-danger' : 'text-slate-500'}`}>
-              Existencia después del movimiento: <span className="font-semibold tabular-nums">{fmtNum(despues)}</span>
-              {despues < 0 && ' (excede la existencia disponible)'}
+              {t('mov.despues')} <span className="font-semibold tabular-nums">{fmtNum(despues)}</span>
+              {despues < 0 && t('mov.excede')}
             </p>
           )}
 
           <Field
-            label="Observaciones (opcional)" id="observaciones" maxLength={250} disabled={!producto}
-            placeholder={esSalida ? 'Ej. Pedido #123' : 'Ej. Factura del proveedor'}
+            label={t('comun.observacionesOpc')} id="observaciones" maxLength={250} disabled={!producto}
+            placeholder={cfg.obs}
             value={obs} onChange={(e) => setObs(e.target.value)}
           />
 
@@ -153,10 +149,10 @@ export default function MovimientoPage({ tipo }) {
       <Card
         titulo={cfg.historial}
         className="lg:col-span-3"
-        accion={<Link to={`/movimientos?tipo=${tipo}`} className="text-xs font-semibold text-brand-tech hover:underline">Ver todos ›</Link>}
+        accion={<Link to={`/movimientos?tipo=${tipo}`} className="text-xs font-semibold text-brand-tech hover:underline">{t('comun.verTodos')} ›</Link>}
       >
         <div className={cargandoH ? 'opacity-60' : ''} aria-busy={cargandoH}>
-          <TablaMovimientos filas={historial} vacio={cargandoH ? 'Cargando…' : cfg.vacio} />
+          <TablaMovimientos filas={historial} vacio={cargandoH ? t('comun.cargando') : cfg.vacio} />
         </div>
       </Card>
     </div>

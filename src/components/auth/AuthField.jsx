@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { t } from '../../i18n'
 
 export default function AuthField({ label, id, type = 'text', ocultarEtiqueta = false, ayuda, className = '', ...props }) {
   const [ver, setVer] = useState(false)
@@ -22,10 +23,10 @@ export default function AuthField({ label, id, type = 'text', ocultarEtiqueta = 
           <button
             type="button"
             onClick={() => setVer((v) => !v)}
-            aria-label={ver ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+            aria-label={ver ? t('comun.ocultarPassword') : t('comun.mostrarPassword')}
             className="absolute inset-y-0 right-0 px-4 text-sm font-semibold text-cyan-300 hover:text-cyan-200"
           >
-            {ver ? 'Ocultar' : 'Mostrar'}
+            {ver ? t('comun.ocultar') : t('comun.mostrar')}
           </button>
         )}
       </div>

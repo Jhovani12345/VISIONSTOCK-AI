@@ -2,12 +2,13 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { obtenerDashboard } from '../../services/dashboard'
 import { traducirErrorDB } from '../../lib/errores'
-import { fmtFechaLarga, fmtNum } from '../../lib/formato'
+import { fmtDiaSemana, fmtFechaLarga, fmtNum } from '../../lib/formato'
 import Alert from '../../components/ui/Alert'
 import BadgeEstado from '../../components/ui/BadgeEstado'
 import Card from '../../components/ui/Card'
 import Icon from '../../components/ui/Icon'
 import TablaMovimientos from '../movimientos/TablaMovimientos'
+import { t } from '../../i18n'
 
 const TONOS = {
   azul: 'bg-sky-50 text-brand-tech',
@@ -42,7 +43,7 @@ function ItemAlerta({ p }) {
         <div className={`h-full rounded-full ${agotado ? 'bg-danger' : 'bg-warn'}`} style={{ width: `${pct}%` }} />
       </div>
       <div className="mt-2 flex items-center justify-between text-xs text-slate-500">
-        <span>{fmtNum(p.cantidad_actual)} / {fmtNum(min)} mín.</span>
+        <span>{fmtNum(p.cantidad_actual)} / {fmtNum(min)} {t('dash.min')}</span>
         <BadgeEstado estado={p.estado} />
       </div>
     </li>
@@ -51,8 +52,7 @@ function ItemAlerta({ p }) {
 
 function diaCorto(fechaISO) {
   const [y, m, d] = fechaISO.split('-').map(Number)
-  const t = new Intl.DateTimeFormat('es-MX', { weekday: 'short' }).format(new Date(y, m - 1, d)).replace('.', '')
-  return t.charAt(0).toUpperCase() + t.slice(1)
+  return fmtDiaSemana(new Date(y, m - 1, d))
 }
 
 export default function AdminDashboard() {
@@ -83,38 +83,38 @@ export default function AdminDashboard() {
 
       {/* KPIs */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Kpi etiqueta="Productos" valor={v(k?.total_productos)} nota="productos activos" notaClase="text-brand-ia" icono="productos" tono="azul" />
-        <Kpi etiqueta="Stock disponible" valor={v(k?.unidades_totales)} nota="unidades totales" notaClase="text-slate-500" icono="inventario" tono="verde" />
-        <Kpi etiqueta="Stock bajo" valor={v(k?.stock_bajo)} nota="por reponer" notaClase="text-warn" icono="advertencia" tono="ambar" />
-        <Kpi etiqueta="Agotados" valor={v(k?.agotados)} nota="requieren acción" notaClase="text-danger" icono="agotado" tono="rojo" />
+        <Kpi etiqueta={t('dash.productos')} valor={v(k?.total_productos)} nota={t('dash.productosActivos')} notaClase="text-brand-ia" icono="productos" tono="azul" />
+        <Kpi etiqueta={t('dash.stockDisponible')} valor={v(k?.unidades_totales)} nota={t('dash.unidadesTotales')} notaClase="text-slate-500" icono="inventario" tono="verde" />
+        <Kpi etiqueta={t('dash.stockBajo')} valor={v(k?.stock_bajo)} nota={t('dash.porReponer')} notaClase="text-warn" icono="advertencia" tono="ambar" />
+        <Kpi etiqueta={t('dash.agotados')} valor={v(k?.agotados)} nota={t('dash.requierenAccion')} notaClase="text-danger" icono="agotado" tono="rojo" />
       </div>
 
       {/* Movimientos + Alertas */}
       <div className="grid gap-5 lg:grid-cols-3">
         <Card
-          titulo="Movimientos recientes"
+          titulo={t('dash.movRecientes')}
           className="lg:col-span-2"
-          accion={<Link to="/movimientos" className="inline-flex items-center gap-1 text-xs font-semibold text-brand-tech hover:underline">Ver todos <Icon name="chevron" className="h-3 w-3" /></Link>}
+          accion={<Link to="/movimientos" className="inline-flex items-center gap-1 text-xs font-semibold text-brand-tech hover:underline">{t('comun.verTodos')} <Icon name="chevron" className="h-3 w-3" /></Link>}
         >
-          <TablaMovimientos filas={d?.movimientos ?? []} vacio={d ? 'Aún no hay movimientos registrados.' : 'Cargando…'} />
+          <TablaMovimientos filas={d?.movimientos ?? []} vacio={d ? t('dash.sinMov') : t('comun.cargando')} />
         </Card>
 
         <Card
-          titulo="Alertas de stock"
+          titulo={t('dash.alertasStock')}
           accion={
             totalAlertas > 0 && (
-              <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-danger px-1.5 text-xs font-bold text-white" aria-label={`${totalAlertas} alertas`}>
+              <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-danger px-1.5 text-xs font-bold text-white" aria-label={t('dash.nAlertas', { n: totalAlertas })}>
                 {totalAlertas}
               </span>
             )
           }
         >
           {d && d.alertas.length === 0 ? (
-            <p className="py-6 text-center text-sm text-slate-500">Sin alertas: todo el inventario está en niveles normales.</p>
+            <p className="py-6 text-center text-sm text-slate-500">{t('dash.sinAlertas')}</p>
           ) : (
             <ul className="space-y-3">
               {(d?.alertas ?? []).slice(0, 4).map((p) => <ItemAlerta key={p.id_producto} p={p} />)}
-              {!d && <li className="py-6 text-center text-sm text-slate-500">Cargando…</li>}
+              {!d && <li className="py-6 text-center text-sm text-slate-500">{t('comun.cargando')}</li>}
             </ul>
           )}
         </Card>
@@ -122,8 +122,8 @@ export default function AdminDashboard() {
 
       {/* Consumo + Auditoría */}
       <div className="grid gap-5 lg:grid-cols-2">
-        <Card titulo="Análisis de consumo" subtitulo="Últimos 7 días">
-          <div className="flex h-28 items-end gap-2" role="img" aria-label="Gráfica de consumo de los últimos 7 días">
+        <Card titulo={t('dash.consumo')} subtitulo={t('dash.ultimos7')}>
+          <div className="flex h-28 items-end gap-2" role="img" aria-label={t('dash.graficaConsumo')}>
             {consumo.map((x, i) => {
               const val = Number(x.consumo)
               return (
@@ -142,34 +142,34 @@ export default function AdminDashboard() {
           </div>
 
           <dl className="mt-4 grid grid-cols-3 gap-3 border-t border-slate-100 pt-4 text-xs">
-            <div><dt className="text-slate-500">Consumo promedio</dt><dd className="mt-0.5 text-sm font-bold text-ink">{k ? `${fmtNum(promedio)} u/día` : '—'}</dd></div>
-            <div><dt className="text-slate-500">Stock actual</dt><dd className="mt-0.5 text-sm font-bold text-ink">{k ? `${fmtNum(k.unidades_totales)} u` : '—'}</dd></div>
-            <div><dt className="text-slate-500">Estimación</dt><dd className="mt-0.5 text-sm font-bold text-ink">{dias !== null ? `≈ ${fmtNum(Math.round(dias))} días` : '—'}</dd></div>
+            <div><dt className="text-slate-500">{t('dash.consumoPromedio')}</dt><dd className="mt-0.5 text-sm font-bold text-ink">{k ? `${fmtNum(promedio)} ${t('dash.uDia')}` : '—'}</dd></div>
+            <div><dt className="text-slate-500">{t('dash.stockActual')}</dt><dd className="mt-0.5 text-sm font-bold text-ink">{k ? `${fmtNum(k.unidades_totales)} ${t('dash.u')}` : '—'}</dd></div>
+            <div><dt className="text-slate-500">{t('dash.estimacion')}</dt><dd className="mt-0.5 text-sm font-bold text-ink">{dias !== null ? t('dash.dias', { n: fmtNum(Math.round(dias)) }) : '—'}</dd></div>
           </dl>
 
           {dias !== null && dias < 7 && (
             <p className="mt-4 flex items-center gap-2 rounded-lg bg-amber-50 px-3 py-2 text-xs font-medium text-amber-700 ring-1 ring-amber-200">
-              <Icon name="tendencia" className="h-3.5 w-3.5" /> Considerar reabastecimiento
+              <Icon name="tendencia" className="h-3.5 w-3.5" /> {t('dash.reabastecer')}
             </p>
           )}
         </Card>
 
         <Card
-          titulo="Última auditoría"
+          titulo={t('dash.ultimaAuditoria')}
           accion={<span className="text-brand-tech"><Icon name="calendario" className="h-4 w-4" /></span>}
         >
           {d && !aud ? (
-            <p className="py-6 text-center text-sm text-slate-500">Aún no hay auditorías finalizadas.</p>
+            <p className="py-6 text-center text-sm text-slate-500">{t('dash.sinAuditorias')}</p>
           ) : (
             <dl className="space-y-3 text-sm">
-              <div className="flex justify-between"><dt className="text-slate-500">Fecha</dt><dd className="font-semibold text-ink">{aud ? fmtFechaLarga(aud.fecha) : '—'}</dd></div>
-              <div className="flex justify-between"><dt className="text-slate-500">Responsable</dt><dd className="font-semibold text-ink">{aud?.responsable ?? '—'}</dd></div>
-              <div className="flex justify-between"><dt className="text-slate-500">Productos revisados</dt><dd className="font-semibold text-ink">{aud ? fmtNum(aud.productos_revisados) : '—'}</dd></div>
-              <div className="flex justify-between"><dt className="text-slate-500">Diferencias detectadas</dt><dd className={`font-semibold ${aud && aud.diferencias > 0 ? 'text-warn' : 'text-ink'}`}>{aud ? fmtNum(aud.diferencias) : '—'}</dd></div>
+              <div className="flex justify-between"><dt className="text-slate-500">{t('comun.fecha')}</dt><dd className="font-semibold text-ink">{aud ? fmtFechaLarga(aud.fecha) : '—'}</dd></div>
+              <div className="flex justify-between"><dt className="text-slate-500">{t('dash.responsable')}</dt><dd className="font-semibold text-ink">{aud?.responsable ?? '—'}</dd></div>
+              <div className="flex justify-between"><dt className="text-slate-500">{t('dash.revisados')}</dt><dd className="font-semibold text-ink">{aud ? fmtNum(aud.productos_revisados) : '—'}</dd></div>
+              <div className="flex justify-between"><dt className="text-slate-500">{t('dash.diferencias')}</dt><dd className={`font-semibold ${aud && aud.diferencias > 0 ? 'text-warn' : 'text-ink'}`}>{aud ? fmtNum(aud.diferencias) : '—'}</dd></div>
             </dl>
           )}
           <Link to="/admin/auditorias" className="mt-5 block rounded-lg border border-brand px-4 py-2 text-center text-sm font-semibold text-brand hover:bg-cyan-50">
-            Ver auditoría
+            {t('dash.verAuditoria')}
           </Link>
         </Card>
       </div>

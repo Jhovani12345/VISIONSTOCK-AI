@@ -156,7 +156,7 @@ export default function AlertasPage() {
                       {a.estado === 'ACTIVA' && (
                         <div className="flex justify-end gap-2">
                           {p.activo && (
-                            <Link to={`/entradas?producto=${p.id_producto}`} className="rounded-md bg-brand-ia px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-emerald-600">
+                            <Link to={`/entradas?producto=${p.id_producto}`} className="rounded-md bg-brand-ia px-2.5 py-1.5 text-xs font-semibold text-white hover:brightness-110">
                               Reabastecer
                             </Link>
                           )}

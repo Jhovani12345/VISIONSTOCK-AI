@@ -6,6 +6,7 @@ import AuthShell from '../../components/ui/AuthShell'
 import AuthField from '../../components/auth/AuthField'
 import AuthButton from '../../components/auth/AuthButton'
 import Alert from '../../components/ui/Alert'
+import { t } from '../../i18n'
 
 export default function Login() {
   const { signIn } = useAuth()
@@ -27,30 +28,30 @@ export default function Login() {
 
   return (
     <AuthShell
-      titulo="Iniciar sesión"
-      subtitulo="Accede a tu panel de inventario inteligente"
+      titulo={t('auth.iniciarSesion')}
+      subtitulo={t('auth.loginSub')}
       pie={
         <>
-          O{' '}
+          {t('auth.o')}{' '}
           <Link to="/registro" className="font-semibold text-cyan-300 hover:underline">
-            regístrate gratis
+            {t('auth.registrateGratis')}
           </Link>
         </>
       }
     >
       <form onSubmit={onSubmit} className="space-y-4" noValidate>
         {error && <Alert oscuro tipo="error">{error}</Alert>}
-        <AuthField label="Correo electrónico" id="correo" type="email" autoComplete="email" required
+        <AuthField label={t('auth.correo')} id="correo" type="email" autoComplete="email" required
           placeholder="usuario@correo.com" value={form.correo} onChange={onChange} />
-        <AuthField label="Contraseña" id="password" type="password" autoComplete="current-password" required
+        <AuthField label={t('auth.password')} id="password" type="password" autoComplete="current-password" required
           value={form.password} onChange={onChange} />
         <div className="text-right">
           <Link to="/recuperar" className="text-xs text-slate-300 hover:text-cyan-300 hover:underline">
-            ¿Olvidaste tu contraseña?
+            {t('auth.olvidaste')}
           </Link>
         </div>
         <AuthButton type="submit" cargando={enviando} disabled={!form.correo || !form.password}>
-          Iniciar sesión
+          {t('auth.iniciarSesion')}
         </AuthButton>
       </form>
     </AuthShell>

@@ -1,3 +1,80 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ============================================================
+   Tokens de color (valores RGB sin "rgb()" para admitir opacidad)
+   El color de acento (--brand*) y la tipografía los fija
+   src/lib/preferencias.js según lo que elija cada usuario.
+   ============================================================ */
+:root {
+  --fuente: 'Inter';
+  --brand: 21 94 117;
+  --brand-tech: 2 132 199;
+  --brand-soft: 103 232 249;
+  --brand-ia: 16 185 129;
+  --ink: 15 23 42;
+  --surface: 248 250 252;
+  --panel: 255 255 255;
+
+  --slate-50: 248 250 252;  --slate-100: 241 245 249; --slate-200: 226 232 240;
+  --slate-300: 203 213 225; --slate-400: 148 163 184; --slate-500: 100 116 139;
+  --slate-600: 71 85 105;   --slate-700: 51 65 85;    --slate-800: 30 41 59;
+  --slate-900: 15 23 42;    --slate-950: 2 6 23;
+
+  --emerald-50: 236 253 245; --emerald-100: 209 250 229; --emerald-200: 167 243 208; --emerald-700: 4 120 87;   --emerald-800: 6 95 70;
+  --sky-50: 240 249 255;     --sky-100: 224 242 254;     --sky-200: 186 230 253;     --sky-700: 3 105 161;    --sky-800: 7 89 133;
+  --red-50: 254 242 242;     --red-100: 254 226 226;     --red-200: 254 202 202;     --red-700: 185 28 28;    --red-800: 153 27 27;
+  --amber-50: 255 251 235;   --amber-100: 254 243 199;   --amber-200: 253 230 138;   --amber-700: 180 83 9;   --amber-800: 146 64 14;
+  --cyan-50: 236 254 255;    --cyan-100: 207 250 254;    --cyan-200: 165 243 252;    --cyan-700: 14 116 144;  --cyan-800: 21 94 117;
+}
+
+html {
+  font-size: var(--tam-base, 16px);
+}
+
+/* ============================================================
+   Modo oscuro: solo dentro de la app (.app-root). Las pantallas de
+   acceso ya tienen su propio diseño oscuro y no se alteran.
+   ============================================================ */
+html.dark body {
+  background-color: rgb(11 17 30);
+}
+
+.dark .app-root {
+  color-scheme: dark;
+  --ink: 241 245 249;
+  --surface: 11 17 30;
+  --panel: 20 28 45;
+
+  --slate-50: 30 41 59;     --slate-100: 39 51 71;    --slate-200: 51 65 85;
+  --slate-300: 71 85 105;   --slate-400: 120 134 156; --slate-500: 148 163 184;
+  --slate-600: 186 197 211; --slate-700: 214 222 232; --slate-800: 232 237 243;
+  --slate-900: 241 245 249; --slate-950: 248 250 252;
+
+  --emerald-50: 2 44 34;  --emerald-100: 6 78 59;   --emerald-200: 6 95 70;   --emerald-700: 110 231 183; --emerald-800: 167 243 208;
+  --sky-50: 8 47 73;      --sky-100: 12 74 110;     --sky-200: 7 89 133;      --sky-700: 125 211 252;     --sky-800: 186 230 253;
+  --red-50: 69 10 10;     --red-100: 127 29 29;     --red-200: 153 27 27;     --red-700: 252 165 165;     --red-800: 254 202 202;
+  --amber-50: 69 26 3;    --amber-100: 120 53 15;   --amber-200: 146 64 14;   --amber-700: 252 211 77;    --amber-800: 253 230 138;
+  --cyan-50: 8 51 68;     --cyan-100: 22 78 99;     --cyan-200: 21 94 117;    --cyan-700: 103 232 249;    --cyan-800: 165 243 252;
+}
+
+.dark .app-root * {
+  --tw-ring-offset-color: rgb(20 28 45);
+}
+
+/* Paneles blancos -> panel oscuro (bg-white/10 del menú lateral no se ve afectado) */
+.dark .app-root .bg-white,
+.dark .app-root .focus\:bg-white:focus {
+  background-color: rgb(var(--panel) / var(--tw-bg-opacity, 1));
+}
+
+/* El acento oscuro no contrasta sobre fondo oscuro: se usa su versión clara para textos */
+.dark .app-root .text-brand,
+.dark .app-root .text-brand-tech,
+.dark .app-root .hover\:text-brand-tech:hover {
+  color: rgb(var(--brand-soft));
+}
+.dark .app-root .border-brand {
+  border-color: rgb(var(--brand-soft) / 0.6);
+}

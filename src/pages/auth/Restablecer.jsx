@@ -8,6 +8,7 @@ import AuthField from '../../components/auth/AuthField'
 import AuthButton from '../../components/auth/AuthButton'
 import Alert from '../../components/ui/Alert'
 import Cargando from '../../components/ui/Cargando'
+import { t } from '../../i18n'
 
 // Ruta pública a propósito: el enlace del correo crea una sesión de recuperación,
 // y GuestRoute lo mandaría al dashboard antes de poder cambiar la contraseña.
@@ -24,17 +25,17 @@ export default function Restablecer() {
 
   if (!session) {
     return (
-      <AuthShell titulo="Enlace no válido" subtitulo="El enlace expiró o ya fue utilizado."
-        pie={<Link to="/recuperar" className="font-semibold text-cyan-300 hover:underline">Solicitar uno nuevo</Link>}>
-        <Alert oscuro tipo="error">No pudimos validar tu enlace de recuperación.</Alert>
+      <AuthShell titulo={t('auth.enlaceInvalido')} subtitulo={t('auth.enlaceExpirado')}
+        pie={<Link to="/recuperar" className="font-semibold text-cyan-300 hover:underline">{t('auth.solicitarNuevo')}</Link>}>
+        <Alert oscuro tipo="error">{t('auth.noValidado')}</Alert>
       </AuthShell>
     )
   }
 
   async function onSubmit(e) {
     e.preventDefault()
-    if (password.length < 8) return setError('La contraseña debe tener al menos 8 caracteres.')
-    if (password !== confirmar) return setError('Las contraseñas no coinciden.')
+    if (password.length < 8) return setError(t('auth.passwordCorta'))
+    if (password !== confirmar) return setError(t('auth.noCoinciden'))
     setError('')
     setEnviando(true)
     try {
@@ -49,24 +50,24 @@ export default function Restablecer() {
 
   if (listo) {
     return (
-      <AuthShell titulo="Contraseña actualizada">
+      <AuthShell titulo={t('auth.passwordActualizada')}>
         <div className="space-y-4">
-          <Alert oscuro tipo="exito">Tu contraseña se cambió correctamente.</Alert>
-          <AuthButton onClick={() => navigate('/', { replace: true })}>Continuar</AuthButton>
+          <Alert oscuro tipo="exito">{t('auth.passwordCambiada')}</Alert>
+          <AuthButton onClick={() => navigate('/', { replace: true })}>{t('auth.continuar')}</AuthButton>
         </div>
       </AuthShell>
     )
   }
 
   return (
-    <AuthShell titulo="Nueva contraseña" subtitulo="Elige una contraseña segura para tu cuenta.">
+    <AuthShell titulo={t('auth.nuevaPassword')} subtitulo={t('auth.nuevaPasswordSub')}>
       <form onSubmit={onSubmit} className="space-y-4" noValidate>
         {error && <Alert oscuro tipo="error">{error}</Alert>}
-        <AuthField ocultarEtiqueta label="Nueva contraseña" id="password" type="password" autoComplete="new-password"
-          ayuda="mínimo 8 caracteres" value={password} onChange={(e) => setPassword(e.target.value)} />
-        <AuthField ocultarEtiqueta label="Confirmar contraseña" id="confirmar" type="password" autoComplete="new-password"
+        <AuthField ocultarEtiqueta label={t('auth.nuevaPassword')} id="password" type="password" autoComplete="new-password"
+          ayuda={t('auth.min8')} value={password} onChange={(e) => setPassword(e.target.value)} />
+        <AuthField ocultarEtiqueta label={t('auth.confirmarPassword')} id="confirmar" type="password" autoComplete="new-password"
           value={confirmar} onChange={(e) => setConfirmar(e.target.value)} />
-        <AuthButton type="submit" invertido cargando={enviando}>Guardar contraseña</AuthButton>
+        <AuthButton type="submit" invertido cargando={enviando}>{t('auth.guardarPassword')}</AuthButton>
       </form>
     </AuthShell>
   )

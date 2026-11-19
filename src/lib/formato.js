@@ -1,20 +1,38 @@
-const num = new Intl.NumberFormat('es-MX', { maximumFractionDigits: 2 })
-const fecha = new Intl.DateTimeFormat('es-MX', { dateStyle: 'short', timeStyle: 'short' })
+import { getLocale } from '../i18n'
 
-export const fmtNum = (n) => num.format(Number(n ?? 0))
-export const fmtFecha = (iso) => (iso ? fecha.format(new Date(iso)) : '—')
+// Los formateadores se crean por idioma y se reutilizan.
+const cache = {}
+function fmt(clave, crear) {
+  const loc = getLocale()
+  const k = `${loc}|${clave}`
+  return (cache[k] ??= crear(loc))
+}
 
-const fechaLarga = new Intl.DateTimeFormat('es-MX', { day: 'numeric', month: 'short', year: 'numeric' })
-const diaMes = new Intl.DateTimeFormat('es-MX', { day: '2-digit', month: 'short' })
+const num = () => fmt('num', (l) => new Intl.NumberFormat(l, { maximumFractionDigits: 2 }))
+const fecha = () => fmt('fecha', (l) => new Intl.DateTimeFormat(l, { dateStyle: 'short', timeStyle: 'short' }))
+const fechaLarga = () => fmt('larga', (l) => new Intl.DateTimeFormat(l, { day: 'numeric', month: 'short', year: 'numeric' }))
+const diaMes = () => fmt('diames', (l) => new Intl.DateTimeFormat(l, { day: '2-digit', month: 'short' }))
+const relativa = () => fmt('rel', (l) => new Intl.RelativeTimeFormat(l, { numeric: 'auto' }))
 
-export const fmtFechaLarga = (iso) => (iso ? fechaLarga.format(new Date(iso)).replace(/\./g, '') : '—')
+export const fmtNum = (n) => num().format(Number(n ?? 0))
+export const fmtFecha = (iso) => (iso ? fecha().format(new Date(iso)) : '—')
+export const fmtFechaLarga = (iso) => (iso ? fechaLarga().format(new Date(iso)).replace(/\./g, '') : '—')
+export const fmtDiaMes = (d) => diaMes().format(d).replace('.', '')
 
-// Hoy / Ayer / 12 sep
+// Hoy / Ayer / 12 sep  (Today / Yesterday / Sep 12)
 export function fmtFechaRelativa(iso) {
   const d = new Date(iso)
   const dia = (x) => new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime()
   const diff = Math.round((dia(new Date()) - dia(d)) / 86400000)
-  if (diff === 0) return 'Hoy'
-  if (diff === 1) return 'Ayer'
-  return diaMes.format(d).replace('.', '')
+  if (diff === 0 || diff === 1) {
+    const s = relativa().format(-diff, 'day')
+    return s.charAt(0).toUpperCase() + s.slice(1)
+  }
+  return fmtDiaMes(d)
+}
+
+// Nombre corto del día: Lun / Mon
+export function fmtDiaSemana(d) {
+  const s = fmt('sem', (l) => new Intl.DateTimeFormat(l, { weekday: 'short' })).format(d).replace('.', '')
+  return s.charAt(0).toUpperCase() + s.slice(1)
 }

@@ -4,9 +4,10 @@ import { traducirErrorDB } from '../../lib/errores'
 import { fmtNum } from '../../lib/formato'
 import { useDebounce } from '../../hooks/useDebounce'
 import Icon from './Icon'
+import { t } from '../../i18n'
 
 // Buscador con autocompletado. Enter = coincidencia exacta de código (lector USB).
-export default function BuscadorProducto({ id = 'buscar-producto', label = 'Producto', onSeleccionar, onError, autoFocus = false }) {
+export default function BuscadorProducto({ id = 'buscar-producto', label = t('comun.producto'), onSeleccionar, onError, autoFocus = false }) {
   const [texto, setTexto] = useState('')
   const q = useDebounce(texto, 250)
   const [resultados, setResultados] = useState([])
@@ -31,13 +32,13 @@ export default function BuscadorProducto({ id = 'buscar-producto', label = 'Prod
   async function onEnter(e) {
     if (e.key !== 'Enter') return
     e.preventDefault()
-    const t = texto.trim()
-    if (!t) return
+    const cod = texto.trim()
+    if (!cod) return
     try {
-      const exacto = await buscarPorCodigo(t)
+      const exacto = await buscarPorCodigo(cod)
       if (exacto) return seleccionar(exacto)
       if (resultados.length === 1) return seleccionar(resultados[0])
-      if (resultados.length === 0) onError?.('No se encontró un producto con ese código.')
+      if (resultados.length === 0) onError?.(t('buscador.noEncontrado'))
     } catch (err) {
       onError?.(traducirErrorDB(err))
     }
@@ -53,7 +54,7 @@ export default function BuscadorProducto({ id = 'buscar-producto', label = 'Prod
           value={texto}
           autoComplete="off"
           autoFocus={autoFocus}
-          placeholder="Buscar por nombre o escanear código"
+          placeholder={t('buscador.placeholder')}
           onChange={(e) => { setTexto(e.target.value); setAbierto(true); onError?.('') }}
           onFocus={() => setAbierto(true)}
           onBlur={() => setAbierto(false)}

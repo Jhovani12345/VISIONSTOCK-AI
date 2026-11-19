@@ -22,6 +22,7 @@ import AlertasPage from './pages/alertas/AlertasPage'
 import AnalisisPage from './pages/analisis/AnalisisPage'
 import ReportesPage from './pages/reportes/ReportesPage'
 import ConfiguracionPage from './pages/configuracion/ConfiguracionPage'
+import PreferenciasPage from './pages/preferencias/PreferenciasPage'
 
 const SOLO_ADMIN = [ROLES.SUPER_ADMIN]
 const AMBOS = [ROLES.SUPER_ADMIN, ROLES.TRABAJADOR_ALMACEN]
@@ -68,6 +69,7 @@ export default function App() {
             <Route path="/entradas" element={<MovimientoPage key="ENTRADA" tipo="ENTRADA" />} />
             <Route path="/salidas" element={<MovimientoPage key="SALIDA" tipo="SALIDA" />} />
             <Route path="/movimientos" element={<HistorialMovimientos />} />
+            <Route path="/preferencias" element={<PreferenciasPage />} />
           </Route>
         </Route>
       </Route>

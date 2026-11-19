@@ -9,6 +9,7 @@
    - `005_auditorias.sql` – flujo de auditorías (iniciar, contar, finalizar con ajuste, cancelar)
    - `006_analisis.sql` – consumo, proyección de días de existencia y predicciones
    - `007_configuracion.sql` – ajustes generales del sistema
+   - `008_preferencias.sql` – tema, idioma, tipografía y color de cada usuario
    - Edge Function `supabase/functions/crear-usuario` (alta de usuarios desde el panel)
 2. `cp .env.example .env` y completar URL y anon key (Settings > API).
 3. `npm install && npm run dev`

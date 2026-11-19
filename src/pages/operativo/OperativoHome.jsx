@@ -5,11 +5,12 @@ import { listarMovimientos } from '../../services/movimientos'
 import Card from '../../components/ui/Card'
 import Icon from '../../components/ui/Icon'
 import TablaMovimientos from '../movimientos/TablaMovimientos'
+import { t } from '../../i18n'
 
 const ACCIONES = [
-  { to: '/entradas', icono: 'entradas', titulo: 'Registrar entrada', texto: 'Ingreso de mercancía', tono: 'bg-emerald-50 text-brand-ia' },
-  { to: '/salidas', icono: 'salidas', titulo: 'Registrar salida', texto: 'Salida de mercancía', tono: 'bg-sky-50 text-brand-tech' },
-  { to: '/inventario', icono: 'inventario', titulo: 'Consultar inventario', texto: 'Existencias y ubicaciones', tono: 'bg-amber-50 text-warn' },
+  { to: '/entradas', icono: 'entradas', titulo: 'oper.regEntrada', texto: 'oper.ingreso', tono: 'bg-emerald-50 text-brand-ia' },
+  { to: '/salidas', icono: 'salidas', titulo: 'oper.regSalida', texto: 'oper.salidaMerc', tono: 'bg-sky-50 text-brand-tech' },
+  { to: '/inventario', icono: 'inventario', titulo: 'oper.consultar', texto: 'oper.existUbic', tono: 'bg-amber-50 text-warn' },
 ]
 
 export default function OperativoHome() {
@@ -26,7 +27,7 @@ export default function OperativoHome() {
 
   return (
     <div className="space-y-5">
-      <p className="text-lg font-semibold text-ink">Hola, {perfil.nombre}</p>
+      <p className="text-lg font-semibold text-ink">{t('oper.hola', { nombre: perfil.nombre })}</p>
 
       <div className="grid gap-4 sm:grid-cols-3">
         {ACCIONES.map((a) => (
@@ -35,16 +36,16 @@ export default function OperativoHome() {
               <Icon name={a.icono} className="h-5 w-5" />
             </span>
             <span>
-              <span className="block text-sm font-semibold text-ink">{a.titulo}</span>
-              <span className="block text-xs text-slate-500">{a.texto}</span>
+              <span className="block text-sm font-semibold text-ink">{t(a.titulo)}</span>
+              <span className="block text-xs text-slate-500">{t(a.texto)}</span>
             </span>
           </Link>
         ))}
       </div>
 
       <Card
-        titulo="Mis movimientos recientes"
-        accion={<Link to="/movimientos" className="text-xs font-semibold text-brand-tech hover:underline">Ver todos ›</Link>}
+        titulo={t('oper.misMov')}
+        accion={<Link to="/movimientos" className="text-xs font-semibold text-brand-tech hover:underline">{t('comun.verTodos')} ›</Link>}
       >
         <TablaMovimientos filas={movs} />
       </Card>

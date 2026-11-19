@@ -10,13 +10,14 @@ import Button from '../../components/ui/Button'
 import Modal from '../../components/ui/Modal'
 import Paginacion from '../../components/ui/Paginacion'
 import ProductoForm from './ProductoForm'
+import { t } from '../../i18n'
 
 const POR_PAGINA = 10
 const FILTROS = [
-  { valor: 'TODOS', etiqueta: 'Todos' },
-  { valor: 'DISPONIBLE', etiqueta: 'Disponible' },
-  { valor: 'STOCK_BAJO', etiqueta: 'Stock bajo' },
-  { valor: 'AGOTADO', etiqueta: 'Agotado' },
+  { valor: 'TODOS', etiqueta: 'comun.todos' },
+  { valor: 'DISPONIBLE', etiqueta: 'estado.DISPONIBLE' },
+  { valor: 'STOCK_BAJO', etiqueta: 'estado.STOCK_BAJO' },
+  { valor: 'AGOTADO', etiqueta: 'estado.AGOTADO' },
 ]
 
 // modoAdmin = true  -> CRUD completo (/admin/productos)
@@ -61,8 +62,8 @@ export default function InventarioPage({ modoAdmin = false }) {
 
   useEffect(() => {
     if (!aviso) return
-    const t = setTimeout(() => setAviso(''), 4000)
-    return () => clearTimeout(t)
+    const id = setTimeout(() => setAviso(''), 4000)
+    return () => clearTimeout(id)
   }, [aviso])
 
   const cerrarModal = useCallback(() => setModal(null), [])
@@ -71,7 +72,7 @@ export default function InventarioPage({ modoAdmin = false }) {
   async function guardar(payload, producto) {
     if (producto) {
       await actualizarProducto(producto.id_producto, payload)
-      setAviso('Producto actualizado.')
+      setAviso(t('inv.msgActualizado'))
     } else {
       try {
         await crearProducto(payload)
@@ -79,7 +80,7 @@ export default function InventarioPage({ modoAdmin = false }) {
         if (e.parcial) recargar() // el producto sí quedó creado
         throw e
       }
-      setAviso('Producto registrado.')
+      setAviso(t('inv.msgRegistrado'))
     }
     setModal(null)
     recargar()
@@ -90,7 +91,7 @@ export default function InventarioPage({ modoAdmin = false }) {
     setProcesando(true)
     try {
       await cambiarActivo(p.id_producto, !p.activo)
-      setAviso(p.activo ? 'Producto dado de baja.' : 'Producto reactivado.')
+      setAviso(p.activo ? t('inv.msgBaja') : t('inv.msgReactivado'))
       recargar()
     } catch (e) {
       setError(traducirErrorDB(e))
@@ -106,7 +107,7 @@ export default function InventarioPage({ modoAdmin = false }) {
   return (
     <section>
       <div className="flex justify-end">
-        {modoAdmin && <Button onClick={() => setModal({ tipo: 'form' })}>+ Nuevo producto</Button>}
+        {modoAdmin && <Button onClick={() => setModal({ tipo: 'form' })}>{t('inv.nuevo')}</Button>}
       </div>
 
       <div className="mt-5 space-y-3">
@@ -115,8 +116,8 @@ export default function InventarioPage({ modoAdmin = false }) {
 
         <input
           type="search"
-          aria-label="Buscar productos"
-          placeholder="Buscar por nombre o código de barras"
+          aria-label={t('layout.buscarProductos')}
+          placeholder={t('inv.buscar')}
           value={busqueda}
           onChange={(e) => { setBusqueda(e.target.value); setPagina(1) }}
           className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm placeholder:text-slate-400 focus:border-brand-tech focus:outline-none focus:ring-2 focus:ring-brand-tech/30"
@@ -132,7 +133,7 @@ export default function InventarioPage({ modoAdmin = false }) {
                 estado === f.valor ? 'bg-brand text-white' : 'bg-white text-slate-600 ring-1 ring-slate-300 hover:bg-slate-50'
               }`}
             >
-              {f.etiqueta}
+              {t(f.etiqueta)}
             </button>
           ))}
           {modoAdmin && (
@@ -142,7 +143,7 @@ export default function InventarioPage({ modoAdmin = false }) {
                 onChange={(e) => { setVerBajas(e.target.checked); setPagina(1) }}
                 className="h-4 w-4 rounded border-slate-300 text-brand-tech focus:ring-brand-tech"
               />
-              Mostrar dados de baja
+              {t('inv.verBajas')}
             </label>
           )}
         </div>
@@ -152,12 +153,12 @@ export default function InventarioPage({ modoAdmin = false }) {
         {filas.length === 0 ? (
           <div className="rounded-2xl bg-white p-10 text-center text-sm text-slate-500 ring-1 ring-slate-200">
             {cargando
-              ? 'Cargando…'
+              ? t('comun.cargando')
               : hayFiltros
-                ? 'Ningún producto coincide con la búsqueda o el filtro.'
+                ? t('inv.sinCoincidencias')
                 : modoAdmin
-                  ? 'Aún no hay productos. Registra el primero con «Nuevo producto».'
-                  : 'Aún no hay productos registrados.'}
+                  ? t('inv.vacioAdmin')
+                  : t('inv.vacio')}
           </div>
         ) : (
           <>
@@ -166,13 +167,13 @@ export default function InventarioPage({ modoAdmin = false }) {
               <table className="w-full text-left text-sm">
                 <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
                   <tr>
-                    <th className="px-4 py-3 font-medium">Producto</th>
-                    <th className="px-4 py-3 font-medium">Código</th>
-                    <th className="px-4 py-3 font-medium">Ubicación</th>
-                    <th className="px-4 py-3 text-right font-medium">Existencia</th>
-                    <th className="px-4 py-3 text-right font-medium">Mínimo</th>
-                    <th className="px-4 py-3 font-medium">Estado</th>
-                    {modoAdmin && <th className="px-4 py-3 font-medium">Acciones</th>}
+                    <th className="px-4 py-3 font-medium">{t('comun.producto')}</th>
+                    <th className="px-4 py-3 font-medium">{t('comun.codigo')}</th>
+                    <th className="px-4 py-3 font-medium">{t('comun.ubicacion')}</th>
+                    <th className="px-4 py-3 text-right font-medium">{t('comun.existencia')}</th>
+                    <th className="px-4 py-3 text-right font-medium">{t('comun.minimo')}</th>
+                    <th className="px-4 py-3 font-medium">{t('comun.estado')}</th>
+                    {modoAdmin && <th className="px-4 py-3 font-medium">{t('comun.acciones')}</th>}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -181,7 +182,7 @@ export default function InventarioPage({ modoAdmin = false }) {
                       <td className="px-4 py-3">
                         <p className="font-semibold text-ink">{p.nombre}</p>
                         {p.descripcion && <p className="max-w-xs truncate text-xs text-slate-500">{p.descripcion}</p>}
-                        <p className="text-xs text-slate-400">Actualizado: {fmtFecha(p.fecha_actualizacion)}</p>
+                        <p className="text-xs text-slate-400">{t('inv.actualizado', { fecha: fmtFecha(p.fecha_actualizacion) })}</p>
                       </td>
                       <td className="px-4 py-3 font-mono text-xs">{p.codigo_barras}</td>
                       <td className="px-4 py-3">{p.ubicacion || '—'}</td>
@@ -215,11 +216,11 @@ export default function InventarioPage({ modoAdmin = false }) {
                   </div>
                   <dl className="mt-3 grid grid-cols-2 gap-2 text-sm">
                     <div>
-                      <dt className="text-xs text-slate-500">Existencia</dt>
+                      <dt className="text-xs text-slate-500">{t('comun.existencia')}</dt>
                       <dd className="font-semibold tabular-nums">{fmtNum(p.cantidad_actual)} <span className="text-xs font-normal text-slate-500">{p.unidad_medida.toLowerCase()}</span></dd>
                     </div>
                     <div>
-                      <dt className="text-xs text-slate-500">Ubicación</dt>
+                      <dt className="text-xs text-slate-500">{t('comun.ubicacion')}</dt>
                       <dd>{p.ubicacion || '—'}</dd>
                     </div>
                   </dl>
@@ -238,22 +239,22 @@ export default function InventarioPage({ modoAdmin = false }) {
       {total > 0 && <Paginacion pagina={pagina} porPagina={POR_PAGINA} total={total} onCambiar={setPagina} />}
 
       {modal?.tipo === 'form' && (
-        <Modal titulo={modal.producto ? 'Editar producto' : 'Nuevo producto'} onCerrar={cerrarModal}>
+        <Modal titulo={modal.producto ? t('inv.editarProducto') : t('inv.nuevoProducto')} onCerrar={cerrarModal}>
           <ProductoForm producto={modal.producto} onGuardar={(payload) => guardar(payload, modal.producto)} onCancelar={cerrarModal} />
         </Modal>
       )}
 
       {modal?.tipo === 'baja' && (
-        <Modal titulo={modal.producto.activo ? 'Dar de baja producto' : 'Reactivar producto'} onCerrar={cerrarModal} ancho="max-w-md">
+        <Modal titulo={modal.producto.activo ? t('inv.darBajaTitulo') : t('inv.reactivarTitulo')} onCerrar={cerrarModal} ancho="max-w-md">
           <p className="text-sm text-slate-600">
             {modal.producto.activo
-              ? `«${modal.producto.nombre}» dejará de aparecer en el inventario y no podrá usarse en movimientos. Su historial se conserva y podrás reactivarlo después.`
-              : `«${modal.producto.nombre}» volverá a estar disponible para movimientos e inventario.`}
+              ? t('inv.bajaTexto', { nombre: modal.producto.nombre })
+              : t('inv.reactivarTexto', { nombre: modal.producto.nombre })}
           </p>
           <div className="mt-6 flex justify-end gap-3">
-            <Button variante="suave" onClick={cerrarModal}>Cancelar</Button>
+            <Button variante="suave" onClick={cerrarModal}>{t('comun.cancelar')}</Button>
             <Button variante={modal.producto.activo ? 'peligro' : 'exito'} cargando={procesando} onClick={confirmarBaja}>
-              {modal.producto.activo ? 'Dar de baja' : 'Reactivar'}
+              {modal.producto.activo ? t('inv.darBaja') : t('inv.reactivar')}
             </Button>
           </div>
         </Modal>
@@ -266,7 +267,7 @@ function Acciones({ p, onEditar, onBaja }) {
   return (
     <div className="flex gap-2">
       <button onClick={() => onEditar(p)} className="rounded-md px-2.5 py-1.5 text-xs font-semibold text-brand ring-1 ring-brand/30 hover:bg-cyan-50">
-        Editar
+        {t('comun.editar')}
       </button>
       <button
         onClick={() => onBaja(p)}
@@ -274,7 +275,7 @@ function Acciones({ p, onEditar, onBaja }) {
           p.activo ? 'text-danger ring-red-200 hover:bg-red-50' : 'text-emerald-700 ring-emerald-200 hover:bg-emerald-50'
         }`}
       >
-        {p.activo ? 'Dar de baja' : 'Reactivar'}
+        {p.activo ? t('inv.darBaja') : t('inv.reactivar')}
       </button>
     </div>
   )

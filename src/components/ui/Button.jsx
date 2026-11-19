@@ -1,8 +1,8 @@
 const VARIANTES = {
-  primario: 'bg-brand-tech text-white hover:bg-sky-700 active:bg-sky-800',
-  secundario: 'bg-brand text-white hover:bg-cyan-800',
-  exito: 'bg-brand-ia text-white hover:bg-emerald-600',
-  peligro: 'bg-danger text-white hover:bg-red-600',
+  primario: 'bg-brand-tech text-white hover:brightness-110 active:brightness-95',
+  secundario: 'bg-brand text-white hover:brightness-110 active:brightness-95',
+  exito: 'bg-brand-ia text-white hover:brightness-110 active:brightness-95',
+  peligro: 'bg-danger text-white hover:brightness-110 active:brightness-95',
   suave: 'bg-white text-slate-700 ring-1 ring-slate-300 hover:bg-slate-50',
 }
 

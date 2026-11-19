@@ -84,7 +84,7 @@ export default function AuditoriasPage() {
           ))}
         </div>
         {enProceso ? (
-          <Link to={`/admin/auditorias/${enProceso.id_auditoria}`} className="rounded-lg bg-brand-tech px-4 py-2.5 text-sm font-semibold text-white hover:bg-sky-700">
+          <Link to={`/admin/auditorias/${enProceso.id_auditoria}`} className="rounded-lg bg-brand-tech px-4 py-2.5 text-sm font-semibold text-white hover:brightness-110">
             Continuar auditoría #{enProceso.id_auditoria}
           </Link>
         ) : (

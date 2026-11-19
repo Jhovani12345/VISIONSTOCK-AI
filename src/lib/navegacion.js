@@ -1,4 +1,5 @@
 import { ROLES } from './constants'
+import { t } from '../i18n'
 
 const ADMIN = [ROLES.SUPER_ADMIN]
 const TRABAJADOR = [ROLES.TRABAJADOR_ALMACEN]
@@ -23,8 +24,16 @@ export const NAV = [
 // Rutas que no aparecen en el menú pero sí tienen título
 const EXTRAS = [
   { to: '/movimientos', etiqueta: 'Movimientos', subtitulo: 'Historial de entradas y salidas' },
+  { to: '/preferencias', etiqueta: 'Preferencias', subtitulo: 'Apariencia e idioma de tu cuenta' },
   { to: '/no-autorizado', etiqueta: 'Acceso no autorizado', subtitulo: '' },
 ]
+
+// Etiqueta traducida de una ruta del menú
+const trNav = (to) => {
+  const r = t(`nav.${to}`)
+  return Array.isArray(r) ? r : null
+}
+export const etiquetaNav = (to) => trNav(to)?.[0] ?? to
 
 export function tituloDe(pathname) {
   const todas = [...NAV, ...EXTRAS]
@@ -32,5 +41,6 @@ export function tituloDe(pathname) {
   const n =
     todas.find((i) => i.to === pathname) ??
     todas.filter((i) => pathname.startsWith(`${i.to}/`)).sort((a, b) => b.to.length - a.to.length)[0]
-  return { titulo: n?.etiqueta ?? 'VisionStock AI', subtitulo: n?.subtitulo ?? '' }
+  const tr = n ? trNav(n.to) : null
+  return { titulo: tr?.[0] ?? n?.etiqueta ?? 'VisionStock AI', subtitulo: tr?.[1] ?? n?.subtitulo ?? '' }
 }

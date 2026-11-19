@@ -1,3 +1,5 @@
+import { t } from '../../i18n'
+
 const ESTADOS = {
   DISPONIBLE: { texto: 'Disponible', clase: 'bg-emerald-50 text-emerald-700 ring-emerald-200', punto: 'bg-brand-ia' },
   STOCK_BAJO: { texto: 'Stock bajo', clase: 'bg-amber-50 text-amber-700 ring-amber-200', punto: 'bg-warn' },
@@ -19,7 +21,7 @@ export default function BadgeEstado({ estado }) {
   return (
     <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ${e.clase}`}>
       <span className={`h-1.5 w-1.5 rounded-full ${e.punto}`} />
-      {e.texto}
+      {ESTADOS[estado] ? t(`estado.${estado}`) : e.texto}
     </span>
   )
 }

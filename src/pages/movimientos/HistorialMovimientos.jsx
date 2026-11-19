@@ -7,12 +7,13 @@ import Alert from '../../components/ui/Alert'
 import Card from '../../components/ui/Card'
 import Paginacion from '../../components/ui/Paginacion'
 import TablaMovimientos from './TablaMovimientos'
+import { t } from '../../i18n'
 
 const POR_PAGINA = 10
 const FILTROS = [
-  { valor: 'TODOS', etiqueta: 'Todos' },
-  { valor: 'ENTRADA', etiqueta: 'Entradas' },
-  { valor: 'SALIDA', etiqueta: 'Salidas' },
+  { valor: 'TODOS', etiqueta: 'comun.todos' },
+  { valor: 'ENTRADA', etiqueta: 'mov.entradas' },
+  { valor: 'SALIDA', etiqueta: 'mov.salidas' },
 ]
 
 export default function HistorialMovimientos() {
@@ -54,7 +55,7 @@ export default function HistorialMovimientos() {
               tipo === f.valor ? 'bg-brand text-white' : 'bg-white text-slate-600 ring-1 ring-slate-300 hover:bg-slate-50'
             }`}
           >
-            {f.etiqueta}
+            {t(f.etiqueta)}
           </button>
         ))}
       </div>
@@ -64,7 +65,7 @@ export default function HistorialMovimientos() {
           filas={datos.filas}
           mostrarUsuario={esAdmin}
           fechaCompleta
-          vacio={cargando ? 'Cargando…' : 'No hay movimientos para este filtro.'}
+          vacio={cargando ? t('comun.cargando') : t('mov.sinFiltro')}
         />
       </div>
       {datos.total > 0 && <Paginacion pagina={pagina} porPagina={POR_PAGINA} total={datos.total} onCambiar={setPagina} />}

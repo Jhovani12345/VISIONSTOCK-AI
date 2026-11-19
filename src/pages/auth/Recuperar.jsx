@@ -6,6 +6,7 @@ import AuthShell from '../../components/ui/AuthShell'
 import AuthField from '../../components/auth/AuthField'
 import AuthButton from '../../components/auth/AuthButton'
 import Alert from '../../components/ui/Alert'
+import { t } from '../../i18n'
 
 export default function Recuperar() {
   const [correo, setCorreo] = useState('')
@@ -15,7 +16,7 @@ export default function Recuperar() {
 
   async function onSubmit(e) {
     e.preventDefault()
-    if (!/^\S+@\S+\.\S+$/.test(correo.trim())) return setError('Ingresa un correo válido.')
+    if (!/^\S+@\S+\.\S+$/.test(correo.trim())) return setError(t('auth.correoInvalido'))
     setError('')
     setEnviando(true)
     try {
@@ -29,22 +30,22 @@ export default function Recuperar() {
   }
 
   const pie = (
-    <Link to="/login" className="font-semibold text-cyan-300 hover:underline">Volver a iniciar sesión</Link>
+    <Link to="/login" className="font-semibold text-cyan-300 hover:underline">{t('auth.volverLogin')}</Link>
   )
 
   return (
-    <AuthShell titulo="Recuperar contraseña" subtitulo="Te enviaremos un enlace para restablecerla." pie={pie}>
+    <AuthShell titulo={t('auth.recuperar')} subtitulo={t('auth.recuperarSub')} pie={pie}>
       {enviado ? (
         // Mensaje genérico: no revela si el correo existe.
         <Alert oscuro tipo="exito">
-          Si el correo está registrado, recibirás un enlace para restablecer tu contraseña en unos minutos.
+          {t('auth.recuperarEnviado')}
         </Alert>
       ) : (
         <form onSubmit={onSubmit} className="space-y-4" noValidate>
           {error && <Alert oscuro tipo="error">{error}</Alert>}
-          <AuthField label="Correo electrónico" id="correo" type="email" autoComplete="email" required
+          <AuthField label={t('auth.correo')} id="correo" type="email" autoComplete="email" required
             placeholder="usuario@correo.com" value={correo} onChange={(e) => setCorreo(e.target.value)} />
-          <AuthButton type="submit" cargando={enviando} disabled={!correo}>Enviar enlace</AuthButton>
+          <AuthButton type="submit" cargando={enviando} disabled={!correo}>{t('auth.enviarEnlace')}</AuthButton>
         </form>
       )}
     </AuthShell>
