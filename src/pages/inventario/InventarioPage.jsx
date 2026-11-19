@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { actualizarProducto, cambiarActivo, crearProducto, listarInventario } from '../../services/productos'
 import { traducirErrorDB } from '../../lib/errores'
 import { fmtFecha, fmtNum } from '../../lib/formato'
@@ -21,7 +22,8 @@ const FILTROS = [
 // modoAdmin = true  -> CRUD completo (/admin/productos)
 // modoAdmin = false -> solo consulta (/inventario)
 export default function InventarioPage({ modoAdmin = false }) {
-  const [busqueda, setBusqueda] = useState('')
+  const [params] = useSearchParams()
+  const [busqueda, setBusqueda] = useState(params.get('q') ?? '')
   const [estado, setEstado] = useState('TODOS')
   const [pagina, setPagina] = useState(1)
   const [verBajas, setVerBajas] = useState(false)
@@ -34,6 +36,13 @@ export default function InventarioPage({ modoAdmin = false }) {
   const [recarga, setRecarga] = useState(0)
   const reqId = useRef(0)
   const q = useDebounce(busqueda)
+
+  // El buscador de la barra superior navega a /inventario?q=...
+  const qUrl = params.get('q') ?? ''
+  useEffect(() => {
+    setBusqueda(qUrl)
+    setPagina(1)
+  }, [qUrl])
 
   useEffect(() => {
     const id = ++reqId.current
@@ -96,13 +105,7 @@ export default function InventarioPage({ modoAdmin = false }) {
 
   return (
     <section>
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold text-ink">{modoAdmin ? 'Productos' : 'Inventario'}</h1>
-          <p className="mt-1 text-sm text-slate-500">
-            {modoAdmin ? 'Administra el catálogo y consulta las existencias.' : 'Consulta las existencias disponibles.'}
-          </p>
-        </div>
+      <div className="flex justify-end">
         {modoAdmin && <Button onClick={() => setModal({ tipo: 'form' })}>+ Nuevo producto</Button>}
       </div>
 

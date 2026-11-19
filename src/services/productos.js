@@ -58,3 +58,36 @@ export async function cambiarActivo(id, activo) {
   const { error } = await supabase.from('producto').update({ activo }).eq('id_producto', id)
   if (error) throw error
 }
+
+// ---- Búsqueda para formularios de movimientos ----
+export async function buscarProductosActivos(texto, limite = 8) {
+  const t = limpiar(texto)
+  if (!t) return []
+  const { data, error } = await supabase
+    .from('vista_inventario')
+    .select('*')
+    .eq('activo', true)
+    .or(`nombre.ilike.%${t}%,codigo_barras.ilike.%${t}%`)
+    .order('nombre')
+    .limit(limite)
+  if (error) throw error
+  return data ?? []
+}
+
+// Coincidencia exacta de código de barras (lector USB: teclea el código + Enter)
+export async function buscarPorCodigo(codigo) {
+  const { data, error } = await supabase
+    .from('vista_inventario')
+    .select('*')
+    .eq('activo', true)
+    .eq('codigo_barras', codigo.trim())
+    .maybeSingle()
+  if (error) throw error
+  return data
+}
+
+export async function obtenerProducto(id) {
+  const { data, error } = await supabase.from('vista_inventario').select('*').eq('id_producto', id).single()
+  if (error) throw error
+  return data
+}

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-export default function Field({ label, id, type = 'text', className = '', ...props }) {
+export default function Field({ label, id, type = 'text', className = '', inputRef, ...props }) {
   const [ver, setVer] = useState(false)
   const esPassword = type === 'password'
 
@@ -13,6 +13,7 @@ export default function Field({ label, id, type = 'text', className = '', ...pro
         <input
           id={id}
           name={id}
+          ref={inputRef}
           type={esPassword && ver ? 'text' : type}
           {...props}
           className={`w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-ink placeholder:text-slate-400 focus:border-brand-tech focus:outline-none focus:ring-2 focus:ring-brand-tech/30 ${esPassword ? 'pr-20' : ''}`}
